@@ -18,7 +18,6 @@ public class Test {
         Video video = new Video();
         video.setVideoId("v01");
         video.setTitle("test");
-        video.setCategory(cate);
 
         try {
             trans.begin();

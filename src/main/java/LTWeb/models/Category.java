@@ -25,16 +25,12 @@ public class Category implements Serializable {
     @Column(name = "Status")
     private int status;
 
-    // Quan hệ 1-N với Video
-    @OneToMany(mappedBy = "category")
-    private List<Video> videos;
 
     public Category() {}
 
     public int getCategoryid() { return categoryid; }
     public void setCategoryid(int categoryid) { this.categoryid = categoryid; }
 
-    // Hỗ trợ thêm viết hoa chữ I cho file Test
     public int getCategoryId() { return categoryid; }
     public void setCategoryId(int categoryId) { this.categoryid = categoryId; }
 
@@ -47,18 +43,5 @@ public class Category implements Serializable {
     public int getStatus() { return status; }
     public void setStatus(int status) { this.status = status; }
 
-    public List<Video> getVideos() { return videos; }
-    public void setVideos(List<Video> videos) { this.videos = videos; }
 
-    public Video addVideo(Video video) {
-        getVideos().add(video);
-        video.setCategory(this);
-        return video;
-    }
-
-    public Video removeVideo(Video video) {
-        getVideos().remove(video);
-        video.setCategory(null);
-        return video;
-    }
 }

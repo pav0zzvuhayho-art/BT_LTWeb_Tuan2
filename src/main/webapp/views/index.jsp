@@ -4,32 +4,44 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Trang chủ</title>
+    <title>Trang chủ - Top 10 Video Mới Nhất</title>
+    <style>
+        .grid { display: flex; flex-wrap: wrap; gap: 20px; }
+        .card { border: 1px solid #ccc; padding: 10px; width: 220px; text-align: center; }
+    </style>
 </head>
 <body>
-    <c:choose>
-        <c:when test="${sessionScope.account == null}">
-            <div>
-                <a href="${pageContext.request.contextPath}/login">Đăng nhập</a> | 
-                <a href="${pageContext.request.contextPath}/register">Đăng ký</a>
-            </div>
-        </c:when>
-        <c:otherwise>
-            <div>
-                Xin chào: <b>${sessionScope.account.fullName}</b> | 
-                <a href="${pageContext.request.contextPath}/logout">Đăng Xuất</a>
-            </div>
-        </c:otherwise>
-    </c:choose>
+    <div>
+        <c:choose>
+            <c:when test="${not empty sessionScope.account}">
+                Xin chào: <b>${sessionScope.account.fullName}</b> |
+                <a href="${pageContext.request.contextPath}/video">Tất cả Video (Phân trang)</a> |
+                <a href="${pageContext.request.contextPath}/admin/videos">Quản lý Video (CRUD)</a> |
+                <a href="${pageContext.request.contextPath}/admin/categories">Quản lý Category</a> |
+                <a href="${pageContext.request.contextPath}/logout">Đăng xuất</a>
+            </c:when>
+            <c:otherwise>
+                <a href="${pageContext.request.contextPath}/login">Đăng nhập</a> |
+                <a href="${pageContext.request.contextPath}/register">Đăng ký</a> |
+                <a href="${pageContext.request.contextPath}/forgot-password">Quên mật khẩu</a> |
+                <a href="${pageContext.request.contextPath}/video">Danh sách Video</a>
+            </c:otherwise>
+        </c:choose>
+    </div>
     <hr/>
-    <h2>Trang chủ hệ thống</h2>
-    
-    <!-- Nút bấm chuyển thẳng sang trang CRUD Category -->
-    <p>
-        <a href="${pageContext.request.contextPath}/admin/category/list" 
-           style="padding: 8px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 4px;">
-            Vào trang Quản lý Danh mục (Category CRUD)
-        </a>
-    </p>
+
+    <h2>Top 10 Video Mới Nhất</h2>
+    <div class="grid">
+        <c:forEach items="${top10Videos}" var="v">
+            <div class="card">
+                <c:url value="/image?fname=${v.poster}" var="posterUrl" />
+                <img src="${v.poster != null && v.poster.startsWith('http') ? v.poster : posterUrl}" width="200" height="120" alt="${v.title}" />
+                <h4>
+                    <a href="${pageContext.request.contextPath}/video/detail?id=${v.videoId}">${v.title}</a>
+                </h4>
+                <p>Lượt xem: ${v.views} | Đăng bởi: ${v.user != null ? v.user.fullName : 'Admin'}</p>
+            </div>
+        </c:forEach>
+    </div>
 </body>
 </html>

@@ -2,6 +2,7 @@ package LTWeb.models;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.List;
 import jakarta.persistence.*;
 
 @SuppressWarnings("serial")
@@ -24,7 +25,7 @@ public class User implements Serializable {
     @Column(name = "fullname", columnDefinition = "NVARCHAR(100)")
     private String fullName;
 
-    @Column(name = "password", nullable = false, columnDefinition = "NVARCHAR(100)")
+    @Column(name = "password", nullable = false, columnDefinition = "NVARCHAR(255)")
     private String passWord;
 
     @Column(name = "avatar", columnDefinition = "NVARCHAR(255)")
@@ -39,10 +40,20 @@ public class User implements Serializable {
     @Column(name = "createdDate")
     private Date createdDate;
 
+    @Column(name = "status")
+    private int status; // 0: Chưa kích hoạt OTP, 1: Đã kích hoạt
+
+    @Column(name = "code", columnDefinition = "VARCHAR(50)")
+    private String code; // Lưu mã OTP
+
+    // Quan hệ 1-N 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Video> videos;
+
     public User() {}
 
     public User(String email, String userName, String fullName, String passWord, 
-                String avatar, int roleid, String phone, Date createdDate) {
+                String avatar, int roleid, String phone, Date createdDate, int status, String code) {
         this.email = email;
         this.userName = userName;
         this.fullName = fullName;
@@ -51,6 +62,8 @@ public class User implements Serializable {
         this.roleid = roleid;
         this.phone = phone;
         this.createdDate = createdDate;
+        this.status = status;
+        this.code = code;
     }
 
     public int getId() { return id; }
@@ -71,4 +84,10 @@ public class User implements Serializable {
     public void setPhone(String phone) { this.phone = phone; }
     public Date getCreatedDate() { return createdDate; }
     public void setCreatedDate(Date createdDate) { this.createdDate = createdDate; }
+    public int getStatus() { return status; }
+    public void setStatus(int status) { this.status = status; }
+    public String getCode() { return code; }
+    public void setCode(String code) { this.code = code; }
+    public List<Video> getVideos() { return videos; }
+    public void setVideos(List<Video> videos) { this.videos = videos; }
 }

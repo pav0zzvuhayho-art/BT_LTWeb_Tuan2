@@ -22,6 +22,19 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public User findByEmail(String email) {
+        EntityManager enma = JPAConfig.getEntityManager();
+        try {
+            String jpql = "SELECT u FROM User u WHERE u.email = :email";
+            TypedQuery<User> query = enma.createQuery(jpql, User.class);
+            query.setParameter("email", email);
+            return query.getResultStream().findFirst().orElse(null);
+        } finally {
+            enma.close();
+        }
+    }
+
+    @Override
     public void insert(User user) {
         EntityManager enma = JPAConfig.getEntityManager();
         EntityTransaction trans = enma.getTransaction();
@@ -38,13 +51,27 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public void update(User user) {
+        EntityManager enma = JPAConfig.getEntityManager();
+        EntityTransaction trans = enma.getTransaction();
+        try {
+            trans.begin();
+            enma.merge(user);
+            trans.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (trans.isActive()) trans.rollback();
+        } finally {
+            enma.close();
+        }
+    }
+
+    @Override
     public boolean checkExistEmail(String email) {
         EntityManager enma = JPAConfig.getEntityManager();
         try {
             String jpql = "SELECT COUNT(u) FROM User u WHERE u.email = :email";
-            Long count = enma.createQuery(jpql, Long.class)
-                             .setParameter("email", email)
-                             .getSingleResult();
+            Long count = enma.createQuery(jpql, Long.class).setParameter("email", email).getSingleResult();
             return count > 0;
         } finally {
             enma.close();
@@ -56,9 +83,7 @@ public class UserDaoImpl implements UserDao {
         EntityManager enma = JPAConfig.getEntityManager();
         try {
             String jpql = "SELECT COUNT(u) FROM User u WHERE u.userName = :username";
-            Long count = enma.createQuery(jpql, Long.class)
-                             .setParameter("username", username)
-                             .getSingleResult();
+            Long count = enma.createQuery(jpql, Long.class).setParameter("username", username).getSingleResult();
             return count > 0;
         } finally {
             enma.close();
@@ -70,9 +95,7 @@ public class UserDaoImpl implements UserDao {
         EntityManager enma = JPAConfig.getEntityManager();
         try {
             String jpql = "SELECT COUNT(u) FROM User u WHERE u.phone = :phone";
-            Long count = enma.createQuery(jpql, Long.class)
-                             .setParameter("phone", phone)
-                             .getSingleResult();
+            Long count = enma.createQuery(jpql, Long.class).setParameter("phone", phone).getSingleResult();
             return count > 0;
         } finally {
             enma.close();

@@ -24,6 +24,7 @@
             <label><input type="checkbox" name="remember" /> Nhớ tôi</label>
         </div>
         <button type="submit">Đăng nhập</button>
+        <a href="${pageContext.request.contextPath}/forgot-password">Quên mật khẩu?</a>
         <p>Nếu bạn chưa có tài khoản trên hệ thống, thì hãy <a href="${pageContext.request.contextPath}/register">Đăng ký</a></p>
     </form>
 </body>
