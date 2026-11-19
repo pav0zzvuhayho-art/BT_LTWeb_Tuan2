@@ -3,14 +3,21 @@ package LTWeb.controllers;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
+import LTWeb.models.User;
+import LTWeb.models.Video;
+import LTWeb.services.IVideoService;
+import LTWeb.services.VideoServiceImpl;
+import LTWeb.utils.Constant;
+import LTWeb.utils.ValidationUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
-import LTWeb.models.User;
-import LTWeb.models.Video;
-import LTWeb.services.*;
-import LTWeb.utils.Constant;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
 
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = {
@@ -21,7 +28,7 @@ import LTWeb.utils.Constant;
 @MultipartConfig(
     fileSizeThreshold = 1024 * 1024 * 2,
     maxFileSize = -1L,
-    maxRequestSize = -1L
+    maxRequestSize = -1L	
 )
 public class VideoController extends HttpServlet {
     private IVideoService videoService = new VideoServiceImpl();
@@ -135,5 +142,24 @@ public class VideoController extends HttpServlet {
             videoService.update(video);
         }
         resp.sendRedirect(req.getContextPath() + "/admin/videos");
+        if (!ValidationUtil.isValidVideoId(videoId)) {
+            req.setAttribute("alert", "Video ID phải từ 2-20 ký tự (chữ, số, gạch ngang/dưới)!");
+            req.setAttribute("videoList", videoService.findAll());
+            req.getRequestDispatcher("/views/admin/video-list.jsp").forward(req, resp);
+            return;
+        }
+        if (ValidationUtil.isEmpty(title) || title.trim().length() < 3) {
+            req.setAttribute("alert", "Tiêu đề video không được để trống và tối thiểu 3 ký tự!");
+            req.setAttribute("videoList", videoService.findAll());
+            req.getRequestDispatcher("/views/admin/video-list.jsp").forward(req, resp);
+            return;
+        }
+        if ("/admin/video/insert".equals(path) && videoService.findById(videoId) != null) {
+            req.setAttribute("alert", "Video ID '" + videoId + "' đã tồn tại!");
+            req.setAttribute("videoList", videoService.findAll());
+            req.getRequestDispatcher("/views/admin/video-list.jsp").forward(req, resp);
+            return;
+        }
     }
+	    
 }
